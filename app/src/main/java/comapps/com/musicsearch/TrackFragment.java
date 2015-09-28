@@ -1,6 +1,7 @@
 package comapps.com.musicsearch;
 
 import android.app.ListFragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -13,6 +14,9 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -21,7 +25,7 @@ import java.util.List;
 public class TrackFragment extends ListFragment {
 
 
-    List<Track> trackList;
+    private List<Track> trackList;
 
 
     @Override
@@ -65,17 +69,18 @@ public class TrackFragment extends ListFragment {
     }
 
 
-    protected void updateDisplay() {
+    private void updateDisplay() {
 
 
 
-        TrackAdapter adapter = new TrackAdapter(TrackFragment.this.getActivity(), R.layout.searchresults, trackList);
+        TrackAdapter adapter = new TrackAdapter(TrackFragment.this.getActivity(), trackList);
 
         if (trackList == null) {
 
             Toast toast = Toast.makeText(getActivity(), "Apple does not know who they are, WTF?", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
+
 
 
 
@@ -90,6 +95,5 @@ public class TrackFragment extends ListFragment {
 
 
 
-
-    }
+}
 

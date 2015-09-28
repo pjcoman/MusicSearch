@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -23,12 +22,11 @@ public class MainActivity extends AppCompatActivity  {
     final static String LOGTAG = "MUSICSEARCH";
 
 
-    ProgressBar pb;
 
-    SearchView search;
+    private SearchView search;
 
 
-    String url = "https://itunes.apple.com/search?term=";
+    private final String url = "https://itunes.apple.com/search?term=";
 
 
 
@@ -112,7 +110,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
-        // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        // hide keyboard
 
         ImageView iv = (ImageView) findViewById(R.id.imageView2);
         iv.setOnTouchListener(new View.OnTouchListener() {
@@ -123,7 +121,6 @@ public class MainActivity extends AppCompatActivity  {
                 return false;
             }
         });
-        // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
 
@@ -148,6 +145,8 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void requestData(String uri) {
+
+
 
         Intent trackResults = new Intent(this, TrackResultsManager.class);
         trackResults.putExtra("URI_TO_SEARCH", uri);

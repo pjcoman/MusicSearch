@@ -3,7 +3,7 @@ package comapps.com.musicsearch;
 /**
  * Created by me on 9/25/2015.
  */
-public class Track {
+class Track {
     /**
      * wrapperType : track
      * kind : song

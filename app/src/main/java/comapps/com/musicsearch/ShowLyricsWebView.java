@@ -1,6 +1,7 @@
 package comapps.com.musicsearch;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,12 +15,16 @@ import com.squareup.picasso.Picasso;
 
 import java.util.StringTokenizer;
 
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.ResponseHandler;
+import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.impl.client.BasicResponseHandler;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class ShowLyricsWebView extends AppCompatActivity {
-    private WebView webView;
 
     private static final String LOGTAG="MUSICSEARCH";
 
@@ -75,19 +80,21 @@ public class ShowLyricsWebView extends AppCompatActivity {
 
 
 
-
-
-
-
 //        getSupportActionBar().setDisplayShowHomeEnabled(true);
 //        getSupportActionBar().setIcon(R.drawable.ic_launcher);
 
-        webView = (WebView) findViewById(R.id.webview1);
+        WebView webView = (WebView) findViewById(R.id.webview1);
         webView.setWebViewClient(new MyWebViewClient());
 
 
 
         String url = "http://lyrics.wikia.com/api.php?func=getSong&artist=" + artist + "&song=" + song + "&fmt=text";
+        url = url.replaceAll("\\s", "_");
+
+        Log.d("url is ", url);
+
+       new RequestTask().execute(url);
+
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(url);
@@ -104,12 +111,11 @@ public class ShowLyricsWebView extends AppCompatActivity {
 
             view.loadUrl(url);
 
+
+
             return true;
         }
     }
-
-
-
 
 
 
@@ -127,4 +133,38 @@ public class ShowLyricsWebView extends AppCompatActivity {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
 
     }
+
+
+    class RequestTask extends AsyncTask<String, String, String>{
+
+        @Override
+// username, password, message, mobile
+        protected String doInBackground(String... url) {
+
+            Log.d("url in asynch thread is", url[0]);
+            // constants
+
+            HttpClient client = new DefaultHttpClient();
+            HttpGet httpget = new HttpGet(url[0]);
+            ResponseHandler<String> handler = new BasicResponseHandler();
+            String response = "";
+
+            try {
+                response = client.execute(httpget,handler);
+
+                return response;
+            } catch (Exception e) {
+                Log.w("MyApp", "Download Exception : " + e.toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // do something with result
+            Log.d("lyrics are " ,result);
+        }
+    }
+
+
 }

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by me on 9/25/2015.
  */
-public class TrackJSONParser {
+class TrackJSONParser {
 
     public static List<Track> parseFeed(String content) throws JSONException {
 

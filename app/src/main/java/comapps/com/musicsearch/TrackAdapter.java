@@ -17,15 +17,15 @@ import java.util.List;
 /**
  * Created by me on 9/25/2015.
  */
-public class TrackAdapter extends ArrayAdapter<Track> {
+class TrackAdapter extends ArrayAdapter<Track> {
 
-    private Context context;
-    private List<Track> trackList;
+    private final Context context;
+    private final List<Track> trackList;
 
 
-    public TrackAdapter(Context context, int resource, List<Track> objects) {
+    public TrackAdapter(Context context, List<Track> objects) {
 
-        super(context, resource, objects);
+        super(context, R.layout.searchresults, objects);
         this.context = context;
         this.trackList = objects;
 
