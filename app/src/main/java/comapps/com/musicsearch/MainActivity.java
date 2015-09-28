@@ -1,13 +1,10 @@
 package comapps.com.musicsearch;
 
-import android.app.ListActivity;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -16,33 +13,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
-import android.widget.Toast;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends AppCompatActivity  {
 
     final static String LOGTAG = "MUSICSEARCH";
 
 
     ProgressBar pb;
-    List<MyTask> tasks;
+
     SearchView search;
-    List<Track> trackList;
+
 
     String url = "https://itunes.apple.com/search?term=";
 
@@ -67,11 +51,10 @@ public class MainActivity extends ListActivity {
 
        
 
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        pb.setVisibility(View.INVISIBLE);
+
 
         search = (SearchView) findViewById(R.id.searchView);
-        search.setQueryHint("SearchView");
+        search.setQueryHint("Enter Artist Name");
 
         //*** setOnQueryTextFocusChangeListener ***
         search.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
@@ -111,6 +94,9 @@ public class MainActivity extends ListActivity {
 
 
                 return true;
+
+
+
             }
 
             @Override
@@ -124,7 +110,7 @@ public class MainActivity extends ListActivity {
 
 
 
-        tasks = new ArrayList<>();
+
 
         // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -156,144 +142,27 @@ public class MainActivity extends ListActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
                 //noinspection SimplifiableIfStatement
-        if (item.getItemId() == R.id.action_get_data) {
-            if (isOnline()) {
-                requestData(url);
-            } else {
-                Toast.makeText(this, "Network isn't available.", Toast.LENGTH_SHORT).show();
-            }
-        }
+
 
         return false;
     }
 
-
-
     private void requestData(String uri) {
 
-        StringRequest request = new StringRequest(uri, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    trackList = TrackJSONParser.parseFeed(response);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                updateDisplay();
-            }
-        },
-                new Response.ErrorListener() {
+        Intent trackResults = new Intent(this, TrackResultsManager.class);
+        trackResults.putExtra("URI_TO_SEARCH", uri);
+       startActivity(trackResults);
 
-                    @Override
-                    public void onErrorResponse(VolleyError ex) {
-                        Toast.makeText(MainActivity.this, ex.getMessage(), Toast.LENGTH_SHORT).show();
 
-                    }
-                });
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(request);
-
-      //  MyTask task = new MyTask();
-      //  task.execute(uri);
     }
 
 
-    protected void updateDisplay() {
-
-        TrackAdapter adapter = new TrackAdapter(this, R.layout.searchresults, trackList);
-
-        if (trackList == null) {
-
-            Toast toast = Toast.makeText(MainActivity.this, "Apple does not know who they are, WTF?", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, -500);
-                    toast.show();
 
 
 
-        } else {
-
-            setListAdapter(adapter);
 
 
-        }
-    }
-
-    protected boolean isOnline()
-
-    {
-
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-   private class MyTask extends AsyncTask<String, String, String>  {
-
-       @Override
-       protected void onPreExecute() {
-
-        //   updateDisplay("Starting task");
-
-           if (tasks.size() == 0) {
-               pb.setVisibility(View.VISIBLE);
-
-           }
-
-           tasks.add(this);
-       }
-
-
-
-       @Override
-       protected String doInBackground(String... params) {
-
-           String content = null;
-           try {
-               content = HttpManager.getData(params[0]);
-           } catch (IOException e) {
-               e.printStackTrace();
-           }
-
-           return content;
-
-       }
-
-       @Override
-       protected void onPostExecute(String result) {
-
-           try {
-               trackList = TrackJSONParser.parseFeed(result);
-           } catch (JSONException e) {
-               e.printStackTrace();
-           }
-
-
-
-           updateDisplay();
-
-
-           tasks.remove(this);
-
-           if (tasks.size() == 0) {
-
-               pb.setVisibility(View.INVISIBLE);
-           }
-       }
-
-       @Override
-       protected void onProgressUpdate(String... values) {
-
-       //    updateDisplay(values[0]);
-
-       }
-   }
 
     @Override
     protected void attachBaseContext(Context newBase) {
